@@ -108,7 +108,7 @@ class CommentDataLoaderUseCaseTest {
                 hasProperty(Comment::id.name, equalTo("comment_17")),
                 hasProperty(Comment::id.name, equalTo("comment_18")),
                 hasProperty(Comment::id.name, equalTo("comment_19"))
-                ))
+        ))
         verify(commentStubHttpService, times(20)).getCommentWithId(any())
     }
 
@@ -147,13 +147,9 @@ class CommentStubHttpService : HackerNewsHttpService {
     private val stubCommentWithKids = CommentEntity("comment_with_child", listOf("reply_1", "reply_2", "reply_3"), "comment_text", System.currentTimeMillis(), "by", "", false)
     private val deletedComment = CommentEntity("comment_1", emptyList(), null, System.currentTimeMillis(), "by", "", true)
 
-    override fun getTopStories(): Single<List<String>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getTopStories(): Single<List<String>> = Single.never()
 
-    override fun getStoryWithId(id: String): Single<Story> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getStoryWithId(id: String): Single<Story> = Single.never()
 
     override fun getCommentWithId(id: String): Single<CommentEntity> {
         return when {

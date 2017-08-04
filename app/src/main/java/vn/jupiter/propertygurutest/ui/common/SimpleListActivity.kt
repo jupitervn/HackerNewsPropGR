@@ -3,7 +3,6 @@ package vn.jupiter.propertygurutest.ui.common
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.widget.Toast
 import com.hannesdorfmann.mosby3.mvi.MviActivity
 import com.jakewharton.rxbinding2.support.v4.widget.refreshes
@@ -66,7 +65,6 @@ abstract class SimpleListActivity<T, VM : ListScreenVM<T>, V : ListView<T, VM>, 
     }
 
     override fun render(viewModel: VM) {
-        Log.d("D.Vu", "Render ${viewModel.data.size}")
         swipe_refresh_layout.isRefreshing = viewModel.isLoading
         adapter.setData(viewModel.data)
         viewModel.error?.let {
@@ -78,8 +76,6 @@ abstract class SimpleListActivity<T, VM : ListScreenVM<T>, V : ListView<T, VM>, 
     open protected fun renderError(error: Throwable) = Toast.makeText(this, getString(R.string.list_general_error), Toast.LENGTH_LONG).show()
 
     abstract fun createAdapter(): ArrayAdapter<T>
-
-//    abstract fun <Any, T> RecyclerView.Adapter<*>.setData(data: List<T>)
 }
 
 

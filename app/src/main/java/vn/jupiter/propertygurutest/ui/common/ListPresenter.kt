@@ -1,11 +1,9 @@
 package vn.jupiter.propertygurutest.ui.common
 
-import android.util.Log
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import vn.jupiter.propertygurutest.data.model.Story
 import vn.jupiter.propertygurutest.ui.home.*
 
 interface DataLoaderUseCase<T> {
@@ -15,15 +13,9 @@ interface DataLoaderUseCase<T> {
 
 
 open class ListPresenter<T, VM: ListScreenVM<T>, V : ListView<T, VM>> (val dataLoaderUseCase: DataLoaderUseCase<T>, var initialState: VM)  : MviBasePresenter<V, VM>() {
-    init {
-        Log.d("D.Vu", "got $dataLoaderUseCase")
-    }
     final override fun bindIntents() {
         val intentAction = intent { view ->
             val refreshDataAction = view.refreshDataIntent
-                    .doOnNext {
-                        Log.d("D.Vu", "Refresh action")
-                    }
                     .observeOn(Schedulers.computation())
                     .flatMap<ListScreenUpdate> {
                         dataLoaderUseCase
@@ -35,9 +27,6 @@ open class ListPresenter<T, VM: ListScreenVM<T>, V : ListView<T, VM>> (val dataL
                                 .startWith(DataLoading)
                     }
             val loadMoreAction = view.loadMoreDataIntent
-                    .doOnNext {
-                        Log.d("D.Vu", "Load more action")
-                    }
                     .flatMap {
                         dataLoaderUseCase
                                 .loadNextData()
@@ -64,7 +53,6 @@ open class ListPresenter<T, VM: ListScreenVM<T>, V : ListView<T, VM>> (val dataL
     }
 
     open protected fun viewReducer(viewState: VM, update: ListScreenUpdate): VM {
-        Log.d("D.Vu", "Reduce $viewState $update")
         return when (update) {
             is DataLoading -> viewState.withLoading(true).withError(null)
             is DataLoadMore -> viewState.withLoading(true)
