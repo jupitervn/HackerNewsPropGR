@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PropertyGuruTest</string>
+    <string name="list_general_error">We cannot process your request right now. Please try again later</string>
+    <string name="story_author">by %1$s</string>
+    <string name="comment_author">%1$s:</string>
+    <string name="story_points">%1$d pts</string>
+</resources>
