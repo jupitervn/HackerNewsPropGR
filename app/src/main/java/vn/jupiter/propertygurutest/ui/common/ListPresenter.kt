@@ -22,7 +22,8 @@ open class ListPresenter<T, VM: ListScreenVM<T>, V : ListView<T, VM>> (val dataL
                                 .refreshData()
                                 .toList()
                                 .toObservable()
-                                .map { DataUpdate(it) as ListScreenUpdate }
+                                .map { DataUpdate(it) }
+                                .cast(ListScreenUpdate::class.java)
                                 .onErrorReturn { DataError(it) }
                                 .startWith(DataLoading)
                     }
@@ -32,7 +33,8 @@ open class ListPresenter<T, VM: ListScreenVM<T>, V : ListView<T, VM>> (val dataL
                                 .loadNextData()
                                 .toList()
                                 .toObservable()
-                                .map { DataInsert(it) as ListScreenUpdate }
+                                .map { DataInsert(it) }
+                                .cast(ListScreenUpdate::class.java)
                                 .onErrorReturn { DataError(it) }
                                 .startWith(DataLoadMore)
                     }

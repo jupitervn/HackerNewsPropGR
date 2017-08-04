@@ -58,6 +58,7 @@ class ListPresenterTest {
         MockitoAnnotations.initMocks(this)
         argumentCaptor = argumentCaptor<HomeScreenVM>()
         whenever(mockDataLoader.refreshData()).thenReturn(Observable.fromIterable(STORY_LIST))
+        whenever(mockDataLoader.loadNextData()).thenReturn(Observable.fromIterable(STORY_LIST))
         homePresenter = HomePresenter(mockDataLoader)
         homePresenter.attachView(viewRobot)
     }
@@ -88,6 +89,38 @@ class ListPresenterTest {
         assertThat(values, Matchers.contains(
                 HomeScreenVM(isLoading = true),
                 HomeScreenVM(error = ioException)
+        ))
+    }
+
+    @Test
+    fun test_load_more_should_trigger_render_more_data() {
+        viewRobot.fireRefreshDataAction()
+        viewRobot.fireLoadMoreDataAction()
+        verify(viewRobot, atLeastOnce()).render(argumentCaptor.capture())
+        val expectedData = STORY_LIST.toMutableList()
+        expectedData.addAll(STORY_LIST)
+        val values = argumentCaptor.allValues
+        assertThat(values, Matchers.contains(
+                HomeScreenVM(isLoading = true),
+                HomeScreenVM(data = STORY_LIST),
+                HomeScreenVM(data = STORY_LIST, isLoading = true),
+                HomeScreenVM(data = expectedData)
+        ))
+    }
+
+    @Test
+    fun test_load_more_error_should_render_old_data_and_error() {
+        val ioException = IOException()
+        whenever(mockDataLoader.loadNextData()).thenReturn(Observable.error(ioException))
+        viewRobot.fireRefreshDataAction()
+        viewRobot.fireLoadMoreDataAction()
+        verify(viewRobot, atLeastOnce()).render(argumentCaptor.capture())
+        val values = argumentCaptor.allValues
+        assertThat(values, Matchers.contains(
+                HomeScreenVM(isLoading = true),
+                HomeScreenVM(data = STORY_LIST),
+                HomeScreenVM(data = STORY_LIST, isLoading = true),
+                HomeScreenVM(data = STORY_LIST, error = ioException, isLoading = false)
         ))
     }
 }
