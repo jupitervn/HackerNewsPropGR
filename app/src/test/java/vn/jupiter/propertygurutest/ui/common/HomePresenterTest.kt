@@ -10,6 +10,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.junit.*
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.Spy
 import vn.jupiter.propertygurutest.data.model.Story
@@ -123,21 +124,47 @@ class ListPresenterTest {
                 HomeScreenVM(data = STORY_LIST, error = ioException, isLoading = false)
         ))
     }
+
+    @Test
+    fun test_view_config_change_should_not_call_data_loader() {
+        viewRobot.fireRefreshDataAction()
+        verify(viewRobot, atLeastOnce()).render(argumentCaptor.capture())
+        var values = argumentCaptor.allValues
+        assertThat(values, Matchers.contains(
+                HomeScreenVM(isLoading = true),
+                HomeScreenVM(data = STORY_LIST)
+        ))
+        verify(mockDataLoader, only()).refreshData()
+
+        Mockito.reset(viewRobot)
+        argumentCaptor = argumentCaptor<HomeScreenVM>()
+        viewRobot.fireViewConfigurationChange()
+        verify(viewRobot, atLeastOnce()).render(argumentCaptor.capture())
+        verifyNoMoreInteractions(mockDataLoader)
+        values = argumentCaptor.allValues
+        assertThat(values, Matchers.contains(
+                HomeScreenVM(data = STORY_LIST, isLoading = true),
+                HomeScreenVM(data = STORY_LIST)
+        ))
+    }
 }
 
 open class HomeViewRobot : HomeView {
-    private val refreshDataPublisher = PublishSubject.create<Unit>()
+    private val refreshDataPublisher = PublishSubject.create<Boolean>()
     private val loadMoreDataPublisher = PublishSubject.create<Unit>()
-    override val refreshDataIntent: Observable<Unit> = refreshDataPublisher
+    override val refreshDataIntent: Observable<Boolean> = refreshDataPublisher
     override val loadMoreDataIntent: Observable<Unit> = loadMoreDataPublisher
 
     override fun render(viewModel: HomeScreenVM) {
     }
 
     fun fireRefreshDataAction() {
-        refreshDataPublisher.onNext(Unit)
+        refreshDataPublisher.onNext(true)
     }
 
+    fun fireViewConfigurationChange() {
+        refreshDataPublisher.onNext(false)
+    }
     fun fireLoadMoreDataAction() {
         loadMoreDataPublisher.onNext(Unit)
     }

@@ -41,18 +41,23 @@ abstract class ArrayAdapter<T>(val context: Context, val onItemClickListener: ((
     protected fun getItemAtPosition(position: Int) = data[position]
 
     fun setData(items: Collection<T>) {
-        dataDisposable?.dispose()
-        dataDisposable = Observable.just(items)
-                .map { DiffUtil.calculateDiff(DataDiffCallback(data.toList(), it.toList())) }
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext {
-                    data.clear()
-                    data.addAll(items)
-                }
-                .subscribe({
-                    it.dispatchUpdatesTo(this)
-                })
+        if (itemCount == 0 && items.isNotEmpty()) {
+            data.addAll(items)
+            notifyDataSetChanged()
+        } else {
+            dataDisposable?.dispose()
+            dataDisposable = Observable.just(items)
+                    .map { DiffUtil.calculateDiff(DataDiffCallback(data.toList(), it.toList())) }
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnNext {
+                        data.clear()
+                        data.addAll(items)
+                    }
+                    .subscribe({
+                        it.dispatchUpdatesTo(this)
+                    })
+        }
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {

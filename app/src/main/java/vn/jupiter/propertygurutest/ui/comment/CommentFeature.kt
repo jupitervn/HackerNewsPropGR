@@ -8,8 +8,8 @@ import vn.jupiter.propertygurutest.data.model.Comment
 import vn.jupiter.propertygurutest.data.model.CommentDataLoaderUseCase
 import vn.jupiter.propertygurutest.data.model.Story
 import vn.jupiter.propertygurutest.ui.common.DataLoaderUseCase
-import vn.jupiter.propertygurutest.ui.home.ListScreenVM
-import vn.jupiter.propertygurutest.ui.home.ListView
+import vn.jupiter.propertygurutest.ui.common.ListScreenVM
+import vn.jupiter.propertygurutest.ui.common.ListView
 
 data class CommentScreenVM(override val data: List<Comment> = emptyList(),
                            override val isLoading: Boolean = false,
